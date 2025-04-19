@@ -175,22 +175,6 @@ end
 ConfigSystem.LoadConfig()
 setupAutoSave() -- Bắt đầu auto save
 
--- Đồng bộ lại dropdown vũ khí sau khi load cấu hình
-local savedShop = ConfigSystem.CurrentConfig.SelectedShop
-local savedWeapon = ConfigSystem.CurrentConfig.SelectedWeapon
-
-if savedShop and Fluent and Fluent.Options and Fluent.Options.WeaponDropdown then
-    local weaponList = weaponsByShop[savedShop] or {}
-    Fluent.Options.WeaponDropdown:SetValues(weaponList)
-
-    if savedWeapon and table.find(weaponList, savedWeapon) then
-        Fluent.Options.WeaponDropdown:SetValue(savedWeapon)
-    elseif weaponList[1] then
-        Fluent.Options.WeaponDropdown:SetValue(weaponList[1])
-        ConfigSystem.CurrentConfig.SelectedWeapon = weaponList[1]
-    end
-end
-
 -- Cập nhật hàm để lưu ngay khi thay đổi giá trị
 local function setupSaveEvents()
     for _, tab in pairs(Tabs) do
@@ -1906,6 +1890,26 @@ Tabs.shop:AddDropdown("WeaponDropdown", {
         print("Selected Weapon:", selectedWeapon) -- Gỡ lỗi
     end
 })
+-- ⏳ Đồng bộ lại danh sách vũ khí sau khi GUI đã khởi tạo
+task.defer(function()
+    local currentShop = ConfigSystem.CurrentConfig.SelectedShop
+    local currentWeapon = ConfigSystem.CurrentConfig.SelectedWeapon
+    local weaponDropdown = Fluent.Options.WeaponDropdown
+
+    if currentShop and weaponsByShop[currentShop] and weaponDropdown then
+        weaponDropdown:SetValues(weaponsByShop[currentShop])
+        if table.find(weaponsByShop[currentShop], currentWeapon) then
+            weaponDropdown:SetValue(currentWeapon)
+        else
+            local defaultWeapon = weaponsByShop[currentShop][1]
+            selectedWeapon = defaultWeapon
+            weaponDropdown:SetValue(defaultWeapon)
+            ConfigSystem.CurrentConfig.SelectedWeapon = defaultWeapon
+            ConfigSystem.SaveConfig()
+        end
+    end
+end)
+
 
 -- Hàm để mua weapon
 local function buyWeapon()
