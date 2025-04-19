@@ -1648,10 +1648,10 @@ Tabs.Discord:AddButton({
     Title = "Copy Discord Link",
     Description = "Copies the Discord invite link to clipboard",
     Callback = function()
-        setclipboard("https://discord.gg/W77Vj2HNBA")
+        setclipboard("")
         Fluent:Notify({
             Title = "Đã sao chép!",
-            Content = "Đường dẫn Discord đã được sao chép vào clipboard.",
+            Content = "Havent added yet.",
             Duration = 3
         })
     end
