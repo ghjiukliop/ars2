@@ -175,6 +175,22 @@ end
 ConfigSystem.LoadConfig()
 setupAutoSave() -- Bắt đầu auto save
 
+-- Đồng bộ lại dropdown vũ khí sau khi load cấu hình
+local savedShop = ConfigSystem.CurrentConfig.SelectedShop
+local savedWeapon = ConfigSystem.CurrentConfig.SelectedWeapon
+
+if savedShop and Fluent and Fluent.Options and Fluent.Options.WeaponDropdown then
+    local weaponList = weaponsByShop[savedShop] or {}
+    Fluent.Options.WeaponDropdown:SetValues(weaponList)
+
+    if savedWeapon and table.find(weaponList, savedWeapon) then
+        Fluent.Options.WeaponDropdown:SetValue(savedWeapon)
+    elseif weaponList[1] then
+        Fluent.Options.WeaponDropdown:SetValue(weaponList[1])
+        ConfigSystem.CurrentConfig.SelectedWeapon = weaponList[1]
+    end
+end
+
 -- Cập nhật hàm để lưu ngay khi thay đổi giá trị
 local function setupSaveEvents()
     for _, tab in pairs(Tabs) do
@@ -1648,10 +1664,10 @@ Tabs.Discord:AddButton({
     Title = "Copy Discord Link",
     Description = "Copies the Discord invite link to clipboard",
     Callback = function()
-        setclipboard("")
+        setclipboard("https://discord.gg/W77Vj2HNBA")
         Fluent:Notify({
             Title = "Đã sao chép!",
-            Content = "Havent added yet.",
+            Content = "Đường dẫn Discord đã được sao chép vào clipboard.",
             Duration = 3
         })
     end
@@ -2378,3 +2394,4 @@ Tabs.dungeon:AddToggle("TeleportMobs", {
         end
     end
 })
+
