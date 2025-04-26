@@ -472,6 +472,44 @@ local Window = Fluent:CreateWindow({
     MinimizeKey = Enum.KeyCode.LeftControl
 })
 
+-- ✅ Physics Fix Script after Fluent Window (Complete)
+
+local Window = Fluent:CreateWindow({
+    Title = "HT HUB | Arise Crossover",
+    SubTitle = "",
+    TabWidth = 140,
+    Size = UDim2.fromOffset(450, 350),
+    Acrylic = false,
+    Theme = "Amethyst",
+    MinimizeKey = Enum.KeyCode.LeftControl
+})
+
+-- 🛠 Physics Restoration (Character floating fix)
+task.defer(function()
+    local player = game:GetService("Players").LocalPlayer
+
+    local function fixPhysics(character)
+        task.wait(0.5)
+        local hrp = character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            hrp.Anchored = false
+            hrp.Velocity = Vector3.new(0, -50, 0) -- Stronger gravity pull
+            hrp.RotVelocity = Vector3.new(0, 0, 0)
+        end
+    end
+
+    -- When character respawns
+    player.CharacterAdded:Connect(function(character)
+        fixPhysics(character)
+    end)
+
+    -- Fix immediately if character already exists
+    if player.Character then
+        fixPhysics(player.Character)
+    end
+end)
+
+
 local Tabs = {
     Discord = Window:AddTab({ Title = "INFO", Icon = ""}),
     Main = Window:AddTab({ Title = "Main", Icon = "" }),
